@@ -1,40 +1,19 @@
 
 
 import * as mobx from 'mobx';
-const { observable, autorun } = mobx;
+const { observable, autorun, computed } = mobx;
 self.mobx = mobx;
 
+class TodoStore {
+	@observable todos = [{
+		title: 'Find a clean mug',
+		completed: true
+	}];
 
-self.vObj = mobx.observable({
-	v: 1
-});
-
-mobx.autorun(() => {
-	vObj.v = Math.random();
-});
-
-self.testV = () => {
-	vObj.v = 1;
-};
+	@computed get completedCount() {
+		return this.todos.filter((todo) => todo.completed).length;
+	}
+}
 
 
-
-
-
-
-
-
-
-
-self.arrObj = mobx.observable({
-	arr: []
-});
-
-mobx.autorun(() => {
-	arrObj.arr = [];
-	console.info(arrObj.arr)
-});
-
-self.testArr = () => {
-	arrObj.arr = [1];
-};
+self.TodoStore = TodoStore;

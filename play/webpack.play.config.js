@@ -29,7 +29,8 @@ module.exports = {
 				loader: 'babel',
 				query: {
 					cacheDirectory: true,
-					presets: ['es2015']
+					presets: ['es2015', 'stage-1'],
+					plugins: ['transform-decorators-legacy']
 				}
 			},
 			{
