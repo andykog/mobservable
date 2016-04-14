@@ -23,8 +23,10 @@ export function extendObservable<A extends Object, B extends Object>(target: A, 
 export function extendObservableHelper(target, properties, mode: ValueMode, name: string): Object {
 	const adm = asObservableObject(target, name, mode);
 	for (let key in properties) if (properties.hasOwnProperty(key)) {
-		if (target === properties && !isPropertyConfigurable(target, key))
+		if (!isPropertyConfigurable(properties, key)) {
+			Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(properties, key));
 			continue; // see #111, skip non-configurable or non-writable props for `observable(object)`.
+		}
 		setObservableObjectProperty(adm, key, properties[key]);
 	}
 	return target;

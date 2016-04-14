@@ -453,19 +453,16 @@ test('observe object', function(t) {
 
 test('mobx.observe', function(t) {
     var events = [];
-    var po = { a: 1 };
     var o = observable({ b: 2 });
     var ar = observable([ 3 ]);
     var map = mobx.map({ });
 
     var push = function(event) { events.push(event); };
 
-    var stop1 = mobx.observe(po, push);
-    var stop2 = mobx.observe(o, push);
-    var stop3 = mobx.observe(ar, push);
-    var stop4 = mobx.observe(map, push);
+    var stop1 = mobx.observe(o, push);
+    var stop2 = mobx.observe(ar, push);
+    var stop3 = mobx.observe(map, push);
 
-    po.a = 4;
     o.b = 5;
     ar[0] = 6;
     map.set("d", 7);
@@ -473,18 +470,12 @@ test('mobx.observe', function(t) {
     stop1();
     stop2();
     stop3();
-    stop4();
 
-    po.a = 8;
     o.b = 9;
     ar[0] = 10;
     map.set("d", 11);
 
     t.deepEqual(events, [
-        { type: 'update',
-            object: po,
-            name: 'a',
-            oldValue: 1 },
         { type: 'update',
             object: o,
             name: 'b',

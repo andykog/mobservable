@@ -114,7 +114,7 @@ export function makeChildObservable(value, parentMode: ValueMode, name?: string)
 	if (Array.isArray(value) && Object.isExtensible(value))
 		return createObservableArray(<[]> value, childMode, name);
 	if (isPlainObject(value) && Object.isExtensible(value))
-		return extendObservableHelper(value, value, childMode, name);
+		return extendObservableHelper({}, value, childMode, name);
 	return value;
 }
 
