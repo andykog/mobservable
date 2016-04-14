@@ -47,6 +47,9 @@ export function observableDecorator(target: Object, key: string, baseDescriptor:
 	descriptor.get = function() {
 		// the getter might create a reactive property lazily, so this might even happen during a view.
 		allowStateChanges(true, () => {
+			if (baseValue && typeof baseValue === "object") {
+				baseValue = Object["assign"]({}, baseValue);
+			}
 			setObservableObjectProperty(asObservableObject(this, undefined, ValueMode.Recursive), key, baseValue);
 		});
 		return this[key];

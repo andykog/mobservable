@@ -1,19 +1,19 @@
 
 
 import * as mobx from 'mobx';
-const { observable, autorun, computed } = mobx;
-self.mobx = mobx;
+Object.assign(self, mobx);
 
-class TodoStore {
-	@observable todos = [{
-		title: 'Find a clean mug',
-		completed: true
-	}];
+class Field {
+	@observable bound = {
+		field: null,
+	};
 
-	@computed get completedCount() {
-		return this.todos.filter((todo) => todo.completed).length;
+	constructor(fieldName) {
+		this.bound.field = fieldName;
 	}
 }
 
+self.field = new Field("AAA");
+self.field2 = new Field("BBB");
 
-self.TodoStore = TodoStore;
+console.log(field.bound.field, field2.bound.field);
