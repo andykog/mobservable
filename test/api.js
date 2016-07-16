@@ -18,7 +18,7 @@ test('correct api should be exposed', function(t) {
 		'autorunUntil',
 		'computed',
 		'createTransformer',
-		'dispose',
+		'disposeCurrentReaction',
 		'expr',
 		'extendObservable',
 		'extras',

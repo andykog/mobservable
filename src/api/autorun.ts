@@ -3,6 +3,7 @@ import {assertUnwrapped, ValueMode, getValueModeFromValue} from "../types/modifi
 import {Reaction} from "../core/reaction";
 import {untrackedStart, untrackedEnd} from "../core/derivation";
 import {action} from "../core/action";
+import {disposeCurrentReaction} from "./disposeCurrentReaction";
 
 /**
  * Creates a reactive view and keeps it alive, so that the view is always
@@ -84,21 +85,14 @@ export function when(arg1: any, arg2: any, arg3?: any, arg4?: any) {
 		scope = arg3;
 	}
 
-	let disposeImmediately = false;
-	const disposer = autorun(name, () => {
+	return autorun(name, () => {
 		if (predicate.call(scope)) {
-			if (disposer)
-				disposer();
-			else
-				disposeImmediately = true;
+			disposeCurrentReaction();
 			const prevUntracked = untrackedStart();
 			effect.call(scope);
 			untrackedEnd(prevUntracked);
 		}
 	});
-	if (disposeImmediately)
-		disposer();
-	return disposer;
 }
 
 export function autorunUntil(predicate: () => boolean, effect: Lambda, scope?: any) {
