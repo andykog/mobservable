@@ -534,3 +534,72 @@ test("540 - extendobservable should not report cycles", function(t) {
 	});
 	t.end();
 })
+
+test('assigning computed value', function (t) {
+    var o = m.observable({
+        a: undefined,
+        b: m.observable({}),
+        c: m.observable([]),
+        d: m.asStructure({}),
+        e: m.asFlat({}),
+        e: m.asReference({}),
+    });
+   
+    var s = m.observable({
+        a: 'a0',
+        b: 'b0',
+        c: 'c0',
+        d: 'd0',
+        e: 'e0',
+        f: 'f0',
+    });
+    
+    var r = {
+        a: undefined,
+        b: undefined,
+        c: undefined,
+        d: undefined,
+        e: undefined,
+        f: undefined,
+    };
+
+    m.reaction(() => o.a, v => { r.a = v; })
+    m.reaction(() => o.b, v => { r.b = v; })
+    m.reaction(() => o.c, v => { r.c = v; })
+    m.reaction(() => o.d, v => { r.d = v; })
+    m.reaction(() => o.e, v => { r.e = v; })
+    m.reaction(() => o.f, v => { r.f = v; })
+
+
+    var computedA = m.computed(() => s.a);
+    var computedB = m.computed(() => s.b);
+    var computedC = m.computed(() => s.c);
+    var computedD = m.computed(() => s.d);
+    var computedE = m.computed(() => s.e);
+    var computedF = m.computed(() => s.f);
+
+    Object.assign(o, {
+        a: computedA,
+        b: computedB,
+        c: computedC,
+        d: computedD,
+        e: computedE,
+        f: computedF,
+    });
+
+
+    t.deepEqual(r, { a: 'a0', b: 'b0', c: 'c0', d: 'd0', e: 'e0', f: undefined });
+
+    Object.assign(s, {
+        a: 'a1',
+        b: 'b1',
+        c: 'c1',
+        d: 'd1',
+        e: 'e1',
+        f: 'f1',
+    });
+
+    t.deepEqual(r, { a: 'a1', b: 'b1', c: 'c1', d: 'd1', e: 'e1', f: undefined });
+   
+    t.end();
+})

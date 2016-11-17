@@ -142,7 +142,7 @@ export function generateObservablePropConfig(propName) {
 			return this.$mobx.values[propName].get();
 		},
 		set: function(v) {
-			setPropertyValue(this, propName, v);
+			setObserblePropertyValue(this, propName, v);
 		}
 	};
 }
@@ -158,12 +158,22 @@ export function generateComputedPropConfig(propName) {
 			return this.$mobx.values[propName].get();
 		},
 		set: function(v) {
-			return this.$mobx.values[propName].set(v);
+			setPropertyValue(this, propName, v);
 		}
 	};
 }
 
 export function setPropertyValue(instance, name: string, newValue) {
+	const adm = instance.$mobx;
+	
+	if (isComputedValue(newValue)) {
+		defineObservableProperty(adm, name, newValue, true, undefined);
+	} else {
+		adm.values[name].set(newValue);
+	}
+}
+
+export function setObserblePropertyValue(instance, name: string, newValue) {
 	const adm = instance.$mobx;
 	const observable = adm.values[name];
 
@@ -177,6 +187,9 @@ export function setPropertyValue(instance, name: string, newValue) {
 		if (!change)
 			return;
 		newValue = change.newValue;
+	}
+	if (typeof observable.prepareNewValue !== 'function') {
+		debugger;
 	}
 	newValue = observable.prepareNewValue(newValue);
 
@@ -193,7 +206,15 @@ export function setPropertyValue(instance, name: string, newValue) {
 
 		if (notifySpy)
 			spyReportStart(change);
-		observable.setNewValue(newValue);
+
+		if (isComputedValue(newValue)) {
+			observable.setNewValue(newValue.get());
+			observable.observers.forEach(reaction => reaction.track(() => newValue.get()));
+			defineObservableProperty(adm, name, newValue, true, undefined);
+		} else {
+			observable.setNewValue(newValue);
+		}
+		
 		if (notify)
 			notifyListeners(adm, change);
 		if (notifySpy)
